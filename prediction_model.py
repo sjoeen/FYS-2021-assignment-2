@@ -9,7 +9,7 @@ class Gaussian:
     likelihood function.
     """
 
-    def __init__(self,x: np.array,prior=float):
+    def __init__(self,x: np.array,prior: float):
 
         self.x = x
         self.N = len(x)
