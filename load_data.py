@@ -9,6 +9,7 @@ from prediction_model import BayesClassifier
 
 
 
+
 def _load_data(file_name):
     """
     A helping function that opens a file

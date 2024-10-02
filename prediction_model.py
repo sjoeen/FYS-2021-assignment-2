@@ -1,9 +1,15 @@
 import numpy as np
+from typing import Optional, Tuple
 
 
 class Gaussian:
+    """
+    class that represents a gaussian distrubution of
+    a dataset, it contains mean,variance and a log
+    likelihood function.
+    """
 
-    def __init__(self,x,prior):
+    def __init__(self,x: np.array,prior=float):
 
         self.x = x
         self.N = len(x)
@@ -19,7 +25,7 @@ class Gaussian:
         self.std = np.sqrt(self.var)
 
 
-    def log_likelihood(self,predictions):
+    def log_likelihood(self,predictions: np.array) -> np.array:
         """
         This function takes the log likelihood in order to check how likely it is that a 
         set of values is under our gaussian distribution. Proof of this formula is under
@@ -34,8 +40,20 @@ class Gaussian:
         return log_likelihoods
 
 class Gamma:
+    """
+    class that represents a gamma distrubution of
+    a dataset, it contains beta,gamma and a log
+    likelihood function.
 
-    def __init__(self,x,prior,gamma=2):
+    NOTE: 
+    This function was constructed with a given
+    gamma
+    """
+
+    def __init__(self,
+                 x:np.array,
+                 prior: np.array,
+                 gamma=2):
 
         self.x = x
         self.N = len(x)
@@ -47,12 +65,13 @@ class Gamma:
             self.beta += x[i]
         self.beta /= ( self.N * self.gamma )
 
-    def log_likelihood(self,predictions):
+    def log_likelihood(self,predictions: np.array) -> np.array:
         """
         This function takes the log likelihood in order to check how likely it is that a 
         set of values is under our gamma distribution. Proof of this formula is under
         point 2.2.
         """
+
         predictions = np.array(predictions,dtype=np.float64)
         predictions = np.clip(predictions, 1e-8, None)
             #gamma distrubution can't handle negative values
@@ -63,7 +82,9 @@ class Gamma:
         term3 = np.log(predictions)
         term4 = - predictions  / self.beta
 
-        log_likelihoods = self.N * (term1 + term2 + term3 + term4 + np.log(self.prior))
+        log_likelihoods = self.N * (term1 + term2 + 
+                                    term3 + term4 + 
+                                    np.log(self.prior))
 
         return log_likelihoods
 
@@ -74,14 +95,17 @@ class BayesClassifier:
     in the classes list and return the accuracy.
     """
 
-    def __init__(self,x,classes,y):
+    def __init__(self,
+                 x: np.array,
+                 classes: list,
+                 y: np.array):
 
         self.x = x
         self.num_samples = len(x)
         self.classes = classes
         self.y = y
 
-    def _compare(self):
+    def _compare(self) -> np.array:
         """
         A help function for the compare function.
         This function returns a  numpy list of the most likely
@@ -99,7 +123,7 @@ class BayesClassifier:
 
         return np.argmax(log_likelihoods,axis=1)
     
-    def compare(self):
+    def compare(self) -> float:
             """
             A compare function that returns the accuracy by comparing
             the samples to the labels.
@@ -118,7 +142,7 @@ class BayesClassifier:
 
             return accuracy * 100
     
-    def miscalulation(self):
+    def miscalulation(self) -> list:
         """
         A function that returns a list of misclassifications.
         """
@@ -130,5 +154,6 @@ class BayesClassifier:
         for index,pred in enumerate(incorrect_list):
             if pred:
                 data_points.append(self.x[index])
+
 
         return data_points
